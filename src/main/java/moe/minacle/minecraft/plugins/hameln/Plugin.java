@@ -53,6 +53,69 @@ public final class Plugin extends JavaPlugin implements Listener {
         return tridentSlotMap;
     }
 
+    @EventHandler
+    private void onEntityRemoveFromWorld(final @NotNull EntityRemoveFromWorldEvent event) {
+        final Entity entity = event.getEntity();
+        if (entity instanceof final Trident trident)
+            if (trident.getShooter() instanceof final Player player) {
+                final Set<Pair<UUID, EquipmentSlot>> tridentSlotPairSet = getTridentSlotPairSet(player.getUniqueId(), false);
+                final UUID tridentUUID;
+                if (tridentSlotPairSet == null || tridentSlotPairSet.isEmpty())
+                    return;
+                tridentUUID = trident.getUniqueId();
+                for (final Pair<UUID, EquipmentSlot> tridentSlotPair : tridentSlotPairSet)
+                    if (tridentSlotPair.getLeft().equals(tridentUUID)) {
+                        tridentSlotPairSet.remove(tridentSlotPair);
+                        return;
+                    }
+            }
+    }
+
+    @EventHandler
+    @SuppressWarnings("deprecation")  // org.bukkit.event.player.PlayerPickupArrowEvent#setCancelled is not deprecated actually
+    private void onPlayerPickupArrow(final @NotNull PlayerPickupArrowEvent event) {
+        final AbstractArrow arrow = event.getArrow();
+        if (arrow instanceof final Trident trident)
+            if (trident.getShooter() instanceof final Player player) {
+                final ItemStack tridentItem = trident.getItem();
+                final PlayerInventory playerInventory = player.getInventory();
+                final Set<Pair<UUID, EquipmentSlot>> tridentSlotPairSet = getTridentSlotPairSet(player.getUniqueId(), false);
+                final UUID tridentUUID;
+                if (tridentSlotPairSet == null || tridentSlotPairSet.isEmpty())
+                    return;
+                tridentUUID = trident.getUniqueId();
+                for (final Pair<UUID, EquipmentSlot> tridentSlotPair : tridentSlotPairSet)
+                    if (tridentSlotPair.getLeft().equals(tridentUUID)) {
+                        final EquipmentSlot equipmentSlot = tridentSlotPair.getRight();
+                        if (playerInventory.getItem(equipmentSlot).getType() == Material.AIR) {
+                            final float itemPickupSoundPitch =
+                                // stolen from net.minecraft.client.multiplayer.ClientPacketListener#handleTakeItemEntity
+                                (randomGenerator.nextFloat() - randomGenerator.nextFloat()) * 1.4f + 2f;
+                            final Location tridentLocation = trident.getLocation();
+                            event.setCancelled(true);
+                            playerInventory.setItem(equipmentSlot, tridentItem);
+                            player.getWorld().playSound(tridentLocation, Sound.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, .2f, itemPickupSoundPitch);
+                        }
+                        trident.remove();
+                        return;
+                    }
+            }
+    }
+
+    @EventHandler
+    private void onProjectileLaunch(final @NotNull ProjectileLaunchEvent event) {
+        if (event.getEntity() instanceof final Trident trident)
+            if (trident.getShooter() instanceof final Player player) {
+                final PlayerInventory playerInventory = player.getInventory();
+                final ItemStack tridentItem = trident.getItem();
+                final Set<Pair<UUID, EquipmentSlot>> tridentSlotPairSet = getTridentSlotPairSet(player.getUniqueId(), true);
+                if (tridentItem.equals(playerInventory.getItemInMainHand()))
+                    tridentSlotPairSet.add(Pair.of(trident.getUniqueId(), EquipmentSlot.HAND));
+                else if (tridentItem.equals(playerInventory.getItemInOffHand()))
+                    tridentSlotPairSet.add(Pair.of(trident.getUniqueId(), EquipmentSlot.OFF_HAND));
+            }
+    }
+
     private void sync(final @NotNull UUID playerUUID) {
         final File playerFile;
         final String playerUUIDString;
@@ -166,70 +229,5 @@ public final class Plugin extends JavaPlugin implements Listener {
         playerTridentSlotPairSetMap = null;
         randomGenerator = null;
         varFolder = null;
-    }
-
-    // MARK: Listener
-
-    @EventHandler
-    public void onEntityRemoveFromWorld(final @NotNull EntityRemoveFromWorldEvent event) {
-        final Entity entity = event.getEntity();
-        if (entity instanceof final Trident trident)
-            if (trident.getShooter() instanceof final Player player) {
-                final Set<Pair<UUID, EquipmentSlot>> tridentSlotPairSet = getTridentSlotPairSet(player.getUniqueId(), false);
-                final UUID tridentUUID;
-                if (tridentSlotPairSet == null || tridentSlotPairSet.isEmpty())
-                    return;
-                tridentUUID = trident.getUniqueId();
-                for (final Pair<UUID, EquipmentSlot> tridentSlotPair : tridentSlotPairSet)
-                    if (tridentSlotPair.getLeft().equals(tridentUUID)) {
-                        tridentSlotPairSet.remove(tridentSlotPair);
-                        return;
-                    }
-            }
-    }
-
-    @EventHandler
-    @SuppressWarnings("deprecation")  // org.bukkit.event.player.PlayerPickupArrowEvent#setCancelled is not deprecated actually
-    public void onPlayerPickupArrow(final @NotNull PlayerPickupArrowEvent event) {
-        final AbstractArrow arrow = event.getArrow();
-        if (arrow instanceof final Trident trident)
-            if (trident.getShooter() instanceof final Player player) {
-                final ItemStack tridentItem = trident.getItem();
-                final PlayerInventory playerInventory = player.getInventory();
-                final Set<Pair<UUID, EquipmentSlot>> tridentSlotPairSet = getTridentSlotPairSet(player.getUniqueId(), false);
-                final UUID tridentUUID;
-                if (tridentSlotPairSet == null || tridentSlotPairSet.isEmpty())
-                    return;
-                tridentUUID = trident.getUniqueId();
-                for (final Pair<UUID, EquipmentSlot> tridentSlotPair : tridentSlotPairSet)
-                    if (tridentSlotPair.getLeft().equals(tridentUUID)) {
-                        final EquipmentSlot equipmentSlot = tridentSlotPair.getRight();
-                        if (playerInventory.getItem(equipmentSlot).getType() == Material.AIR) {
-                            final float itemPickupSoundPitch =
-                                // stolen from net.minecraft.client.multiplayer.ClientPacketListener#handleTakeItemEntity
-                                (randomGenerator.nextFloat() - randomGenerator.nextFloat()) * 1.4f + 2f;
-                            final Location tridentLocation = trident.getLocation();
-                            event.setCancelled(true);
-                            playerInventory.setItem(equipmentSlot, tridentItem);
-                            player.getWorld().playSound(tridentLocation, Sound.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, .2f, itemPickupSoundPitch);
-                        }
-                        trident.remove();
-                        return;
-                    }
-            }
-    }
-
-    @EventHandler
-    public void onProjectileLaunch(final @NotNull ProjectileLaunchEvent event) {
-        if (event.getEntity() instanceof final Trident trident)
-            if (trident.getShooter() instanceof final Player player) {
-                final PlayerInventory playerInventory = player.getInventory();
-                final ItemStack tridentItem = trident.getItem();
-                final Set<Pair<UUID, EquipmentSlot>> tridentSlotPairSet = getTridentSlotPairSet(player.getUniqueId(), true);
-                if (tridentItem.equals(playerInventory.getItemInMainHand()))
-                    tridentSlotPairSet.add(Pair.of(trident.getUniqueId(), EquipmentSlot.HAND));
-                else if (tridentItem.equals(playerInventory.getItemInOffHand()))
-                    tridentSlotPairSet.add(Pair.of(trident.getUniqueId(), EquipmentSlot.OFF_HAND));
-            }
     }
 }

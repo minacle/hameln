@@ -4,6 +4,6 @@ main: moe.minacle.minecraft.plugins.hameln.Plugin
 description: Master the art of trident throwing with precision returns to your waiting hand!
 authors:
   - Minacle
-website: https://github.com/minacle/hameln
+website: https://modrinth.com/plugin/hameln
 api-version: "1.20"
 folia-supported: true
