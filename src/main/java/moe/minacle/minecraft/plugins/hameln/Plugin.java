@@ -122,6 +122,18 @@ public final class Plugin extends JavaPlugin implements Listener {
                     trident.getPersistentDataContainer().set(Hand.getKey(), PrimitivePersistentDataType.BYTE, Hand.OFF_HAND.getValue());
                 else
                     return;
+                trident.getScheduler().runAtFixedRate(
+                    this,
+                    (task) -> {
+                        if (trident.getWorld().getMinHeight() - 32 > trident.getY()) {
+                            trident.setHasDealtDamage(true);
+                            task.cancel();
+                        }
+                    },
+                    null,
+                    1,
+                    1
+                );
             }
     }
 
