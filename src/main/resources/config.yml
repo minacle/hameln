@@ -39,12 +39,12 @@ portal:
   nether-portal:
 
     # Behaviour when touching a portal from the Overworld to the Nether.
-    # Possible values are `default`, `ignore`, or `vanilla`.
+    # Possible values are `default` or `ignore`.
     # The default value is `default`.
     to-nether: ~
 
     # Behaviour when touching a portal from the Nether to the Overworld.
-    # Possible values are `default`, `ignore`, or `vanilla`.
+    # Possible values are `default` or `ignore`.
     # The default value is `default`.
     to-overworld: ~
 
@@ -52,16 +52,16 @@ portal:
   end-portal:
 
     # Behaviour when touching a portal from the Overworld to the End.
-    # Possible values are `default`, `ignore`, or `vanilla`.
+    # Possible values are `default` or `ignore`.
     # The default value is `default`.
     to-end: ~
 
     # Behaviour when touching a portal from the End to the Overworld.
-    # Possible values are `default`, `ignore`, or `vanilla`.
+    # Possible values are `default` or `ignore`.
     # The default value is `default`.
     to-overworld: ~
 
   # Behaviour when coming into contact with an End gateway.
-  # Possible values are `default`, `ignore`, or `vanilla`.
+  # Possible values are `default` or `ignore`.
   # The default value is `default`.
   end-gateway: ~

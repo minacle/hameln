@@ -108,8 +108,6 @@ public final class Plugin extends JavaPlugin implements Listener {
                 return;
             if (teleportSpecification == Configuration.TeleportSpecification.IGNORE)
                 event.setCancelled(true);
-            else if (teleportSpecification == Configuration.TeleportSpecification.VANILLA)
-                event.setCancelled(false);
         }
     }
 
@@ -119,8 +117,6 @@ public final class Plugin extends JavaPlugin implements Listener {
             final Configuration.TeleportSpecification teleportSpecification = configuration.getPortal().getEndGateway();
             if (teleportSpecification == Configuration.TeleportSpecification.IGNORE)
                 event.setCancelled(true);
-            else if (teleportSpecification == Configuration.TeleportSpecification.VANILLA)
-                event.setCancelled(false);
         }
     }
 

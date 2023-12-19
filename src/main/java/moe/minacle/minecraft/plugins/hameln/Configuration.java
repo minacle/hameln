@@ -9,8 +9,7 @@ public final class Configuration {
     public static enum TeleportSpecification {
 
         DEFAULT("default", null),
-        IGNORE("ignore", Boolean.FALSE),
-        VANILLA("vanilla", Boolean.TRUE);
+        IGNORE("ignore", Boolean.FALSE);
 
         public static @Nullable TeleportSpecification value(final @Nullable Object object) {
             if (object == null)
@@ -21,7 +20,7 @@ public final class Configuration {
                         return value;
                 }
             else if (object instanceof final Boolean booleanObject)
-                return booleanObject.booleanValue() ? VANILLA : IGNORE;
+                return booleanObject.booleanValue() ? null : IGNORE;
             return null;
         }
 
