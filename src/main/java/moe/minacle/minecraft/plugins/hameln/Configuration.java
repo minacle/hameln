@@ -12,20 +12,17 @@ public final class Configuration {
         IGNORE("ignore", Boolean.FALSE),
         VANILLA("vanilla", Boolean.TRUE);
 
-        public static @Nullable TeleportSpecification value(final @NotNull String stringObject) {
-            for (final TeleportSpecification value : values())
-                if (value.getStringObject().equals(stringObject))
-                    return value;
-            return null;
-        }
-
-        public static @NotNull TeleportSpecification value(final @Nullable Boolean booleanObject) {
-            if (booleanObject == null)
+        public static @Nullable TeleportSpecification value(final @Nullable Object object) {
+            if (object == null)
                 return DEFAULT;
-            else if (booleanObject)
-                return VANILLA;
-            else
-                return IGNORE;
+            else if (object instanceof final String stringObject)
+                for (final TeleportSpecification value : values()) {
+                    if (value.getStringObject().equals(stringObject))
+                        return value;
+                }
+            else if (object instanceof final Boolean booleanObject)
+                return booleanObject.booleanValue() ? VANILLA : IGNORE;
+            return null;
         }
 
         private final @Nullable Boolean booleanObject;
@@ -168,15 +165,8 @@ public final class Configuration {
 
             public @NotNull TeleportSpecification getToNether() {
                 if (toNether == null) {
-                    final Object object = getFileConfiguration().get(getPathForKey(TO_NETHER_KEY));
-                    if (object instanceof final String stringObject) {
-                        toNether = TeleportSpecification.value(stringObject);
-                        if (toNether == null)
-                            toNether = TeleportSpecification.DEFAULT;
-                    }
-                    else if (object instanceof final Boolean booleanObject)
-                        toNether = TeleportSpecification.value(booleanObject);
-                    else
+                    toNether = TeleportSpecification.value(getFileConfiguration().get(getPathForKey(TO_NETHER_KEY)));
+                    if (toNether == null)
                         toNether = TeleportSpecification.DEFAULT;
                 }
                 return toNether;
@@ -184,15 +174,8 @@ public final class Configuration {
 
             public @NotNull TeleportSpecification getToOverworld() {
                 if (toOverworld == null) {
-                    final Object object = getFileConfiguration().get(getPathForKey(TO_OVERWORLD_KEY));
-                    if (object instanceof final String stringObject) {
-                        toOverworld = TeleportSpecification.value(stringObject);
-                        if (toOverworld == null)
-                            toOverworld = TeleportSpecification.DEFAULT;
-                    }
-                    else if (object instanceof final Boolean booleanObject)
-                        toOverworld = TeleportSpecification.value(booleanObject);
-                    else
+                    toOverworld = TeleportSpecification.value(getFileConfiguration().get(getPathForKey(TO_OVERWORLD_KEY)));
+                    if (toOverworld == null)
                         toOverworld = TeleportSpecification.DEFAULT;
                 }
                 return toOverworld;
@@ -217,15 +200,8 @@ public final class Configuration {
 
             public @NotNull TeleportSpecification getToEnd() {
                 if (toEnd == null) {
-                    final Object object = getFileConfiguration().get(getPathForKey(TO_END_KEY));
-                    if (object instanceof final String stringObject) {
-                        toEnd = TeleportSpecification.value(stringObject);
-                        if (toEnd == null)
-                            toEnd = TeleportSpecification.DEFAULT;
-                    }
-                    else if (object instanceof final Boolean booleanObject)
-                        toEnd = TeleportSpecification.value(booleanObject);
-                    else
+                    toEnd = TeleportSpecification.value(getFileConfiguration().get(getPathForKey(TO_END_KEY)));
+                    if (toEnd == null)
                         toEnd = TeleportSpecification.DEFAULT;
                 }
                 return toEnd;
@@ -233,15 +209,8 @@ public final class Configuration {
 
             public @NotNull TeleportSpecification getToOverworld() {
                 if (toOverworld == null) {
-                    final Object object = getFileConfiguration().get(getPathForKey(TO_OVERWORLD_KEY));
-                    if (object instanceof final String stringObject) {
-                        toOverworld = TeleportSpecification.value(stringObject);
-                        if (toOverworld == null)
-                            toOverworld = TeleportSpecification.DEFAULT;
-                    }
-                    else if (object instanceof final Boolean booleanObject)
-                        toOverworld = TeleportSpecification.value(booleanObject);
-                    else
+                    toOverworld = TeleportSpecification.value(getFileConfiguration().get(getPathForKey(TO_OVERWORLD_KEY)));
+                    if (toOverworld == null)
                         toOverworld = TeleportSpecification.DEFAULT;
                 }
                 return toOverworld;
@@ -278,15 +247,8 @@ public final class Configuration {
 
         public @NotNull TeleportSpecification getEndGateway() {
             if (endGateway == null) {
-                final Object object = getFileConfiguration().get(getPathForKey(END_GATEWAY_KEY));
-                if (object instanceof final String stringObject) {
-                    endGateway = TeleportSpecification.value(stringObject);
-                    if (endGateway == null)
-                        endGateway = TeleportSpecification.DEFAULT;
-                }
-                else if (object instanceof final Boolean booleanObject)
-                    endGateway = TeleportSpecification.value(booleanObject);
-                else
+                endGateway = TeleportSpecification.value(getFileConfiguration().get(getPathForKey(END_GATEWAY_KEY)));
+                if (endGateway == null)
                     endGateway = TeleportSpecification.DEFAULT;
             }
             return endGateway;
