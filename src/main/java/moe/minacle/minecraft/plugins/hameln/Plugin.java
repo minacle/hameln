@@ -82,7 +82,7 @@ public final class Plugin extends JavaPlugin implements Listener {
 
     private @Nullable RandomGenerator randomGenerator;
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     private void onEntityPortal(final @NotNull EntityPortalEvent event) {
         if (event.getEntity() instanceof final Trident trident) {
             final Environment fromEnvironment = event.getFrom().getWorld().getEnvironment();
@@ -113,7 +113,7 @@ public final class Plugin extends JavaPlugin implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     private void onEntityTeleportEndGateway(final @NotNull EntityTeleportEndGatewayEvent event) {
         if (event.getEntity() instanceof final Trident trident) {
             final Configuration.TeleportSpecification teleportSpecification = configuration.getPortal().getEndGateway();
