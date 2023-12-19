@@ -8,7 +8,7 @@ public final class Configuration {
 
     public static enum TeleportSpecification {
 
-        DEFAULT("default", (Boolean)null),
+        DEFAULT("default", null),
         IGNORE("ignore", Boolean.FALSE),
         VANILLA("vanilla", Boolean.TRUE);
 
