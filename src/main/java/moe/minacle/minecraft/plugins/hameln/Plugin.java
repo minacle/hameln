@@ -81,6 +81,7 @@ public final class Plugin extends JavaPlugin implements Listener {
         if (event.getArrow() instanceof final Trident trident)
             if (trident.getShooter() instanceof final Player player) {
                 final PersistentDataContainer tridentPersistentDataContainer;
+                final NamespacedKey handKey;
                 final Hand hand;
                 final EquipmentSlot equipmentSlot;
                 final PlayerInventory playerInventory;
@@ -89,9 +90,10 @@ public final class Plugin extends JavaPlugin implements Listener {
                 if (!player.equals(event.getPlayer()))
                     return;
                 tridentPersistentDataContainer = trident.getPersistentDataContainer();
-                if (!tridentPersistentDataContainer.has(Hand.getKey(), PrimitivePersistentDataType.BYTE))
+                handKey = Hand.getKey();
+                if (!tridentPersistentDataContainer.has(handKey, PrimitivePersistentDataType.BYTE))
                     return;
-                hand = Hand.of(tridentPersistentDataContainer.get(Hand.getKey(), PrimitivePersistentDataType.BYTE));
+                hand = Hand.of(tridentPersistentDataContainer.get(handKey, PrimitivePersistentDataType.BYTE));
                 if (hand == null)
                     return;
                 equipmentSlot = hand.getEquipmentSlot();
@@ -116,16 +118,18 @@ public final class Plugin extends JavaPlugin implements Listener {
             if (trident.getShooter() instanceof final Player player) {
                 final PlayerInventory playerInventory = player.getInventory();
                 final ItemStack tridentItem = trident.getItem();
+                final double belowWorldHeight;
                 if (tridentItem.equals(playerInventory.getItemInMainHand()))
                     trident.getPersistentDataContainer().set(Hand.getKey(), PrimitivePersistentDataType.BYTE, Hand.MAIN_HAND.getValue());
                 else if (tridentItem.equals(playerInventory.getItemInOffHand()))
                     trident.getPersistentDataContainer().set(Hand.getKey(), PrimitivePersistentDataType.BYTE, Hand.OFF_HAND.getValue());
                 else
                     return;
+                belowWorldHeight = trident.getWorld().getMinHeight() - 64;
                 trident.getScheduler().runAtFixedRate(
                     this,
                     (task) -> {
-                        if (trident.getWorld().getMinHeight() - 32 > trident.getY()) {
+                        if (trident.getY() + trident.getVelocity().getY() <= belowWorldHeight) {
                             trident.setHasDealtDamage(true);
                             task.cancel();
                         }
