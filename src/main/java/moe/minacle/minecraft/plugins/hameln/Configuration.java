@@ -6,6 +6,30 @@ import org.jetbrains.annotations.Nullable;
 
 public final class Configuration {
 
+    private static final @NotNull String COLLIDE_BELOW_WORLD_BOUNDARY_KEY = "collide-below-world-boundary";
+
+    private static final @NotNull String END_GATEWAY_KEY = "end-gateway";
+
+    private static final @NotNull String END_PORTAL_KEY = "end-portal";
+
+    private static final @NotNull String LOYALTY_KEY = "loyalty";
+
+    private static final @NotNull String NETHER_PORTAL_KEY = "nether-portal";
+
+    private static final @NotNull String PICKUP_KEY = "pickup";
+
+    private static final @NotNull String PORTAL_KEY = "portal";
+
+    private static final @NotNull String TO_END_KEY = "to-end";
+
+    private static final @NotNull String TO_MAIN_HAND_KEY = "to-main-hand";
+
+    private static final @NotNull String TO_NETHER_KEY = "to-nether";
+
+    private static final @NotNull String TO_OFF_HAND_KEY = "to-off-hand";
+
+    private static final @NotNull String TO_OVERWORLD_KEY = "to-overworld";
+
     public static enum TeleportSpecification {
 
         DEFAULT("default"),  // null
@@ -67,18 +91,12 @@ public final class Configuration {
 
     public final class PickupSection extends Section {
 
-        private static final @NotNull String SECTION_KEY = "pickup";
-
-        private static final @NotNull String TO_MAIN_HAND_KEY = "to-main-hand";
-
-        private static final @NotNull String TO_OFF_HAND_KEY = "to-off-hand";
-
         private @Nullable Boolean toMainHand;
 
         private @Nullable Boolean toOffHand;
 
         PickupSection() {
-            super(SECTION_KEY, null);
+            super(PICKUP_KEY, null);
         }
 
         public boolean getToMainHand() {
@@ -96,14 +114,6 @@ public final class Configuration {
 
     public final class LoyaltySection extends Section {
 
-        private static final @NotNull String SECTION_KEY = "loyalty";
-
-        private static final @NotNull String TO_MAIN_HAND_KEY = "to-main-hand";
-
-        private static final @NotNull String TO_OFF_HAND_KEY = "to-off-hand";
-
-        private static final @NotNull String COLLIDE_BELOW_WORLD_BOUNDARY = "collide-below-world-boundary";
-
         private @Nullable Boolean toMainHand;
 
         private @Nullable Boolean toOffHand;
@@ -111,7 +121,7 @@ public final class Configuration {
         private @Nullable Boolean collideBelowWorldBoundary;
 
         LoyaltySection() {
-            super(SECTION_KEY, null);
+            super(LOYALTY_KEY, null);
         }
 
         public boolean getToMainHand() {
@@ -128,7 +138,7 @@ public final class Configuration {
 
         public boolean getCollideBelowWorldBoundary() {
             if (collideBelowWorldBoundary == null)
-                collideBelowWorldBoundary = getFileConfiguration().getBoolean(getPathForKey(COLLIDE_BELOW_WORLD_BOUNDARY));
+                collideBelowWorldBoundary = getFileConfiguration().getBoolean(getPathForKey(COLLIDE_BELOW_WORLD_BOUNDARY_KEY));
             return collideBelowWorldBoundary;
         }
     }
@@ -137,18 +147,12 @@ public final class Configuration {
 
         public final class NetherPortalSection extends Section {
 
-            private static final @NotNull String SECTION_KEY = "nether-portal";
-
-            private static final @NotNull String TO_NETHER_KEY = "to-nether";
-
-            private static final @NotNull String TO_OVERWORLD_KEY = "to-overworld";
-
             private @Nullable TeleportSpecification toNether;
 
             private @Nullable TeleportSpecification toOverworld;
 
             NetherPortalSection(final @Nullable Section supersection) {
-                super(SECTION_KEY, supersection);
+                super(NETHER_PORTAL_KEY, supersection);
             }
 
             public @NotNull TeleportSpecification getToNether() {
@@ -172,18 +176,12 @@ public final class Configuration {
 
         public final class EndPortalSection extends Section {
 
-            private static final @NotNull String SECTION_KEY = "end-portal";
-
-            private static final @NotNull String TO_END_KEY = "to-end";
-
-            private static final @NotNull String TO_OVERWORLD_KEY = "to-overworld";
-
             private @Nullable TeleportSpecification toEnd;
 
             private @Nullable TeleportSpecification toOverworld;
 
             EndPortalSection(final @Nullable Section supersection) {
-                super(SECTION_KEY, supersection);
+                super(END_PORTAL_KEY, supersection);
             }
 
             public @NotNull TeleportSpecification getToEnd() {
@@ -205,14 +203,6 @@ public final class Configuration {
             }
         }
 
-        private static final @NotNull String SECTION_KEY = "portal";
-
-        private static final @NotNull String NETHER_PORTAL_KEY = "nether-portal";
-
-        private static final @NotNull String END_PORTAL_KEY = "end-portal";
-
-        private static final @NotNull String END_GATEWAY_KEY = "end-gateway";
-
         private @NotNull NetherPortalSection netherPortal;
 
         private @NotNull EndPortalSection endPortal;
@@ -220,7 +210,7 @@ public final class Configuration {
         private @Nullable TeleportSpecification endGateway;
 
         PortalSection() {
-            super(SECTION_KEY, null);
+            super(PORTAL_KEY, null);
             netherPortal = new NetherPortalSection(this);
             endPortal = new EndPortalSection(this);
         }
@@ -242,12 +232,6 @@ public final class Configuration {
             return endGateway;
         }
     }
-
-    private static @NotNull String PICKUP_KEY = "pickup";
-
-    private static @NotNull String LOYALTY_KEY = "loyalty";
-
-    private static @NotNull String PORTAL_KEY = "portal";
 
     private @NotNull FileConfiguration fileConfiguration;
 
