@@ -1,7 +1,10 @@
 package moe.minacle.minecraft.plugins.hameln;
 
+import java.util.Locale;
 import java.util.random.RandomGenerator;
 
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -29,6 +32,8 @@ import org.jetbrains.annotations.UnknownNullability;
 import com.destroystokyo.paper.event.entity.EntityTeleportEndGatewayEvent;
 
 public final class Plugin extends JavaPlugin implements Listener {
+
+    private static final int BSTATS_PLUGIN_ID = 20342;
 
     private static enum Hand {
 
@@ -81,6 +86,32 @@ public final class Plugin extends JavaPlugin implements Listener {
     private @Nullable Configuration configuration;
 
     private @Nullable RandomGenerator randomGenerator;
+
+    private void addCustomChartsToMetrics(final @NotNull Metrics metrics) {
+        final Configuration.PickupSection pickup = configuration.getPickup();
+        final Configuration.LoyaltySection loyalty = configuration.getLoyalty();
+        final Configuration.PortalSection portal = configuration.getPortal();
+        final String pickupToMainHand = pickup.getToMainHand() ? "true" : "false";
+        final String pickupToOffHand = pickup.getToOffHand() ? "true" : "false";
+        final String loyaltyToMainHand = loyalty.getToMainHand() ? "true" : "false";
+        final String loyaltyToOffHand = loyalty.getToOffHand() ? "true" : "false";
+        final String loyaltyCollideBelowWorldBoundary = loyalty.getCollideBelowWorldBoundary() ? "true" : "false";
+        final String portalNetherPortalToNether = portal.getNetherPortal().getToNether().toString().toLowerCase(Locale.ROOT);
+        final String portalNetherPortalToOverworld = portal.getNetherPortal().getToOverworld().toString().toLowerCase(Locale.ROOT);
+        final String portalEndPortalToEnd = portal.getEndPortal().getToEnd().toString().toLowerCase(Locale.ROOT);
+        final String portalEndPortalToOverworld = portal.getEndPortal().getToOverworld().toString().toLowerCase(Locale.ROOT);
+        final String portalEndGateway = portal.getEndGateway().toString().toLowerCase(Locale.ROOT);
+        metrics.addCustomChart(new SimplePie("pickup.toMainHand", () -> pickupToMainHand));
+        metrics.addCustomChart(new SimplePie("pickup.toOffHand", () -> pickupToOffHand));
+        metrics.addCustomChart(new SimplePie("loyalty.toMainHand", () -> loyaltyToMainHand));
+        metrics.addCustomChart(new SimplePie("loyalty.toOffHand", () -> loyaltyToOffHand));
+        metrics.addCustomChart(new SimplePie("loyalty.collideBelowWorldBoundary", () -> loyaltyCollideBelowWorldBoundary));
+        metrics.addCustomChart(new SimplePie("portal.netherPortal.toNether", () -> portalNetherPortalToNether));
+        metrics.addCustomChart(new SimplePie("portal.netherPortal.toOverworld", () -> portalNetherPortalToOverworld));
+        metrics.addCustomChart(new SimplePie("portal.endPortal.toEnd", () -> portalEndPortalToEnd));
+        metrics.addCustomChart(new SimplePie("portal.endPortal.toOverworld", () -> portalEndPortalToOverworld));
+        metrics.addCustomChart(new SimplePie("portal.endGateway", () -> portalEndGateway));
+    }
 
     @EventHandler(ignoreCancelled = true)
     private void onEntityPortal(final @NotNull EntityPortalEvent event) {
@@ -210,9 +241,11 @@ public final class Plugin extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         super.onEnable();
+        final Metrics metrics = new Metrics(this, BSTATS_PLUGIN_ID);
         configuration = new Configuration(this);
         randomGenerator = RandomGenerator.of("Random");
         getServer().getPluginManager().registerEvents(this, this);
+        addCustomChartsToMetrics(metrics);
     }
 
     @Override
