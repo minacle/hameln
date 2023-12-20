@@ -5,12 +5,15 @@ import java.util.random.RandomGenerator;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.PortalType;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Trident;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPortalEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.inventory.EquipmentSlot;
@@ -22,6 +25,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
+
+import com.destroystokyo.paper.event.entity.EntityTeleportEndGatewayEvent;
 
 public final class Plugin extends JavaPlugin implements Listener {
 
@@ -73,7 +78,47 @@ public final class Plugin extends JavaPlugin implements Listener {
         return sharedPlugin;
     }
 
+    private @Nullable Configuration configuration;
+
     private @Nullable RandomGenerator randomGenerator;
+
+    @EventHandler(ignoreCancelled = true)
+    private void onEntityPortal(final @NotNull EntityPortalEvent event) {
+        if (event.getEntity() instanceof final Trident trident) {
+            final Environment fromEnvironment = event.getFrom().getWorld().getEnvironment();
+            final Environment toEnvironment = event.getTo().getWorld().getEnvironment();
+            final Configuration.TeleportSpecification teleportSpecification;
+            if (event.getPortalType() == PortalType.NETHER) {
+                if (fromEnvironment == Environment.NORMAL && toEnvironment == Environment.NETHER)
+                    teleportSpecification = configuration.getPortal().getNetherPortal().getToNether();
+                else if (fromEnvironment == Environment.NETHER && toEnvironment == Environment.NORMAL)
+                    teleportSpecification = configuration.getPortal().getNetherPortal().getToOverworld();
+                else
+                    return;
+            }
+            else if (event.getPortalType() == PortalType.ENDER) {
+                if (fromEnvironment == Environment.NORMAL && toEnvironment == Environment.THE_END)
+                    teleportSpecification = configuration.getPortal().getEndPortal().getToEnd();
+                else if (fromEnvironment == Environment.THE_END && toEnvironment == Environment.NORMAL)
+                    teleportSpecification = configuration.getPortal().getEndPortal().getToOverworld();
+                else
+                    return;
+            }
+            else
+                return;
+            if (teleportSpecification == Configuration.TeleportSpecification.IGNORE)
+                event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    private void onEntityTeleportEndGateway(final @NotNull EntityTeleportEndGatewayEvent event) {
+        if (event.getEntity() instanceof final Trident trident) {
+            final Configuration.TeleportSpecification teleportSpecification = configuration.getPortal().getEndGateway();
+            if (teleportSpecification == Configuration.TeleportSpecification.IGNORE)
+                event.setCancelled(true);
+        }
+    }
 
     @EventHandler
     @SuppressWarnings("deprecation")  // org.bukkit.event.player.PlayerPickupArrowEvent#setCancelled is not deprecated actually
@@ -85,8 +130,6 @@ public final class Plugin extends JavaPlugin implements Listener {
                 final Hand hand;
                 final EquipmentSlot equipmentSlot;
                 final PlayerInventory playerInventory;
-                if (trident.getLoyaltyLevel() <= 0)
-                    return;
                 if (!player.equals(event.getPlayer()))
                     return;
                 tridentPersistentDataContainer = trident.getPersistentDataContainer();
@@ -96,6 +139,18 @@ public final class Plugin extends JavaPlugin implements Listener {
                 hand = Hand.of(tridentPersistentDataContainer.get(handKey, PrimitivePersistentDataType.BYTE));
                 if (hand == null)
                     return;
+                if (trident.getLoyaltyLevel() > 0) {
+                    if (hand == Hand.MAIN_HAND && !configuration.getLoyalty().getToMainHand())
+                        return;
+                    else if (hand == Hand.OFF_HAND && !configuration.getLoyalty().getToOffHand())
+                        return;
+                }
+                else {
+                    if (hand == Hand.MAIN_HAND && !configuration.getPickup().getToMainHand())
+                        return;
+                    else if (hand == Hand.OFF_HAND && !configuration.getPickup().getToOffHand())
+                        return;
+                }
                 equipmentSlot = hand.getEquipmentSlot();
                 playerInventory = player.getInventory();
                 if (playerInventory.getItem(equipmentSlot).getType() == Material.AIR) {
@@ -125,6 +180,8 @@ public final class Plugin extends JavaPlugin implements Listener {
                     trident.getPersistentDataContainer().set(Hand.getKey(), PrimitivePersistentDataType.BYTE, Hand.OFF_HAND.getValue());
                 else
                     return;
+                if (trident.getLoyaltyLevel() <= 0 || !configuration.getLoyalty().getCollideBelowWorldBoundary())
+                    return;
                 belowWorldHeight = trident.getWorld().getMinHeight() - 64;
                 trident.getScheduler().runAtFixedRate(
                     this,
@@ -147,11 +204,13 @@ public final class Plugin extends JavaPlugin implements Listener {
     public void onLoad() {
         super.onLoad();
         sharedPlugin = this;
+        saveDefaultConfig();
     }
 
     @Override
     public void onEnable() {
         super.onEnable();
+        configuration = new Configuration(this);
         randomGenerator = RandomGenerator.of("Random");
         getServer().getPluginManager().registerEvents(this, this);
     }
@@ -159,6 +218,7 @@ public final class Plugin extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         super.onDisable();
+        configuration = null;
         randomGenerator = null;
     }
 }

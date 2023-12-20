@@ -1,0 +1,67 @@
+# Configures the behaviour when acquiring a standard trident.
+# This applies only to the player who last threw the trident.
+pickup:
+
+  # Determines whether a trident thrown from the main hand should be acquired into the active slot.
+  # Possible values are `true` or `false`.
+  # The default value is `false`.
+  to-main-hand: false
+
+  # Determines whether a trident thrown from the off-hand should be acquired into the off-hand slot.
+  # Possible values are `true` or `false`.
+  # The default value is `false`.
+  to-off-hand: false
+
+
+# Sets the behaviour of tridents enchanted with Loyalty when they return.
+loyalty:
+
+  # Determines whether a trident thrown from the main hand should be acquired into the active slot.
+  # Possible values are `true` or `false`.
+  # The default value is `true`.
+  to-main-hand: true
+
+  # Determines whether a trident thrown from the off-hand should be acquired into the off-hand slot.
+  # Possible values are `true` or `false`.
+  # The default value is `true`.
+  to-off-hand: true
+
+  # Determines the behaviour when the trident collides with the world's lower boundary.
+  # Possible values are `true` or `false`.
+  # Setting to `false` (not colliding) reflects the vanilla behaviour, resulting in the trident being lost as the Loyalty enchantment does not activate.
+  # The default value is `true`.
+  collide-below-world-boundary: true
+
+# Configures the behaviour of tridents when they come into contact with portals.
+portal:
+
+  # Sets the behaviour when coming into contact with a Nether portal.
+  nether-portal:
+
+    # Behaviour when touching a portal from the Overworld to the Nether.
+    # Possible values are `default` or `ignore`.
+    # The default value is `default`.
+    to-nether: ~
+
+    # Behaviour when touching a portal from the Nether to the Overworld.
+    # Possible values are `default` or `ignore`.
+    # The default value is `default`.
+    to-overworld: ~
+
+  # Sets the behaviour when coming into contact with an End portal.
+  end-portal:
+
+    # Behaviour when touching a portal from the Overworld to the End.
+    # Possible values are `default` or `ignore`.
+    # The default value is `default`.
+    to-end: ~
+
+    # Behaviour when touching a portal from the End to the Overworld.
+    # Possible values are `default` or `ignore`.
+    # The default value is `default`.
+    to-overworld: ~
+
+  # Behaviour when coming into contact with an End gateway.
+  # Possible values are `default` or `ignore`.
+  # The default value is `default`.
+  end-gateway: ~
