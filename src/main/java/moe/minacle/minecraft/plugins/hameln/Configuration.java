@@ -8,15 +8,15 @@ public final class Configuration {
 
     public static enum TeleportSpecification {
 
-        DEFAULT("default", null),
-        IGNORE("ignore", Boolean.FALSE);
+        DEFAULT("default"),  // null
+        IGNORE("ignore");  // false
 
         public static @Nullable TeleportSpecification value(final @Nullable Object object) {
             if (object == null)
                 return DEFAULT;
             else if (object instanceof final String stringObject)
                 for (final TeleportSpecification value : values()) {
-                    if (value.getStringObject().equals(stringObject))
+                    if (value.keyword.equals(stringObject))
                         return value;
                 }
             else if (object instanceof final Boolean booleanObject)
@@ -24,21 +24,10 @@ public final class Configuration {
             return null;
         }
 
-        private final @Nullable Boolean booleanObject;
+        private final @NotNull String keyword;
 
-        private final @NotNull String stringObject;
-
-        private TeleportSpecification(final @NotNull String stringObject, final @Nullable Boolean booleanObject) {
-            this.stringObject = stringObject;
-            this.booleanObject = booleanObject;
-        }
-
-        private @Nullable Boolean getBooleanObject() {
-            return booleanObject;
-        }
-
-        private @NotNull String getStringObject() {
-            return stringObject;
+        private TeleportSpecification(final @NotNull String keyword) {
+            this.keyword = keyword;
         }
     }
 
