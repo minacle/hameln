@@ -188,7 +188,7 @@ public final class Plugin extends JavaPlugin implements Listener {
                     final float itemPickupSoundPitch =
                         // stolen from net.minecraft.client.multiplayer.ClientPacketListener#handleTakeItemEntity
                         (randomGenerator.nextFloat() - randomGenerator.nextFloat()) * 1.4f + 2f;
-                    final ItemStack tridentItem = trident.getItem();
+                    final ItemStack tridentItem = trident.getItemStack();
                     final Location tridentLocation = trident.getLocation();
                     event.setCancelled(true);
                     playerInventory.setItem(equipmentSlot, tridentItem);
@@ -203,7 +203,7 @@ public final class Plugin extends JavaPlugin implements Listener {
         if (event.getEntity() instanceof final Trident trident)
             if (trident.getShooter() instanceof final Player player) {
                 final PlayerInventory playerInventory = player.getInventory();
-                final ItemStack tridentItem = trident.getItem();
+                final ItemStack tridentItem = trident.getItemStack();
                 final double belowWorldHeight;
                 if (tridentItem.equals(playerInventory.getItemInMainHand()))
                     trident.getPersistentDataContainer().set(Hand.getKey(), PrimitivePersistentDataType.BYTE, Hand.MAIN_HAND.getValue());
