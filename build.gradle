@@ -26,7 +26,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly "io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT"
+    compileOnly "io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT"
     implementation "org.bstats:bstats-bukkit:3.0.2"
     implementation "org.jetbrains:annotations:24.1.0"
 }
@@ -48,7 +48,7 @@ processResources {
 
 tasks {
     runServer {
-        minecraftVersion "1.21"
+        minecraftVersion "1.21.1"
     }
 }
 
